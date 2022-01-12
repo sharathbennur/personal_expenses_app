@@ -36,6 +36,10 @@ class MyHomePage extends StatelessWidget {
       transactionDate: DateTime.now(),
     )
   ];
+  // String titleInput = '';
+  // String amountInput = '';
+  final titleController = TextEditingController();
+  final amountController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +48,7 @@ class MyHomePage extends StatelessWidget {
         title: const Text('Personal Expenses App'),
       ),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        // mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Container(
@@ -53,6 +57,44 @@ class MyHomePage extends StatelessWidget {
               child: Text('Chart'),
               elevation: 5,
               color: Colors.blue,
+            ),
+          ),
+          Card(
+            child: Container(
+              padding: const EdgeInsets.all(5),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  TextField(
+                    decoration: const InputDecoration(
+                      labelText: 'Title',
+                    ),
+                    controller: titleController,
+                    // onChanged: (val) {
+                    //   titleInput = val;
+                    // },
+                  ),
+                  TextField(
+                    decoration: const InputDecoration(
+                      labelText: 'Amount',
+                    ),
+                    controller: amountController,
+                    // onChanged: (val) {
+                    //   amountInput = val;
+                    // },
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      print(titleController);
+                      print(amountController);
+                    },
+                    child: const Text(
+                      'Add Transaction',
+                      style: TextStyle(color: Colors.purple),
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
           Column(
