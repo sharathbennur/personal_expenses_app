@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import './adaptive_flat_button.dart';
+
 class NewTransaction extends StatefulWidget {
   final Function addTx;
 
@@ -49,65 +51,65 @@ class _NewTransactionState extends State<NewTransaction> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 5,
-      child: Container(
-        padding: const EdgeInsets.all(5),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            TextField(
-              decoration: const InputDecoration(
-                labelText: 'Title',
+    return SingleChildScrollView(
+      child: Card(
+        elevation: 5,
+        child: Container(
+          padding: EdgeInsets.only(
+              top: 10,
+              left: 10,
+              right: 10,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              TextField(
+                decoration: const InputDecoration(
+                  labelText: 'Title',
+                ),
+                controller: _titleController,
+                onSubmitted: (_) => _submitTx(),
               ),
-              controller: _titleController,
-              onSubmitted: (_) => _submitTx(),
-            ),
-            TextField(
-              decoration: const InputDecoration(
-                labelText: 'Amount',
+              TextField(
+                decoration: const InputDecoration(
+                  labelText: 'Amount',
+                ),
+                controller: _amountController,
+                keyboardType: TextInputType.number,
+                onSubmitted: (_) => _submitTx(),
               ),
-              controller: _amountController,
-              keyboardType: TextInputType.number,
-              onSubmitted: (_) => _submitTx(),
-            ),
-            Container(
-              height: 70,
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Text(
-                      (_selectedDate == null
-                          ? 'No Date Chosen!'
-                          : 'Picked Date: ${DateFormat.yMd().format(_selectedDate!)}'),
-                      style: Theme.of(context).textTheme.bodyText1,
+              Container(
+                height: 70,
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        (_selectedDate == null
+                            ? 'No Date Chosen!'
+                            : 'Picked Date: ${DateFormat.yMd().format(_selectedDate!)}'),
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
                     ),
+                    AdaptiveFlatButton('Choose Date', _presentDatePicker)
+                  ],
+                ),
+              ),
+              Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                ElevatedButton(
+                  onPressed: _submitTx,
+                  child: const Text(
+                    'Add Transaction',
                   ),
-                  TextButton(
-                    child: const Text(
-                      'Choose Date',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    onPressed: _presentDatePicker,
-                  )
-                ],
-              ),
-            ),
-            Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-              ElevatedButton(
-                onPressed: _submitTx,
-                child: const Text(
-                  'Add Transaction',
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(
+                        Theme.of(context).primaryColorDark),
+                    textStyle: MaterialStateProperty.all(
+                        Theme.of(context).textTheme.button),
+                  ),
                 ),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                      Theme.of(context).primaryColorDark),
-                  textStyle: MaterialStateProperty.all(
-                      Theme.of(context).textTheme.button),
-                ),
-              ),
-            ])
-          ],
+              ])
+            ],
+          ),
         ),
       ),
     );
