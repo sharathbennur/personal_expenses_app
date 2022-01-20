@@ -63,20 +63,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var uuid = const Uuid();
-  final List<Transaction> _userTransactions = [
-    // Transaction(
-    //   id: 't1',
-    //   title: 'New Shoes',
-    //   amount: 69.99,
-    //   transactionDate: DateTime.now(),
-    // ),
-    // Transaction(
-    //   id: 't2',
-    //   title: 'Groceres',
-    //   amount: 54.22,
-    //   transactionDate: DateTime.now(),
-    // )
-  ];
+  final List<Transaction> _userTransactions = [];
 
   List<Transaction> get _recentTransactions {
     return _userTransactions.where((element) {
@@ -157,63 +144,80 @@ class _MyHomePageState extends State<MyHomePage> {
             0.7,
         child: TransactionList(_userTransactions, _deleteTransaction));
 
+    List<Widget> _buildPortraitContent() {
+      return [
+        Container(
+          height: (_mediaQuery.size.height -
+                  _appBar.preferredSize.height -
+                  _mediaQuery.padding.top) *
+              0.3,
+          child: Chart(_recentTransactions),
+        ),
+        txListWidget
+      ];
+    }
+
+    List<Widget> _buildLandscapeContent() {
+      return [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('Show Chart'),
+            Switch.adaptive(
+              activeColor: Theme.of(context).colorScheme.secondary,
+              value: _showChart,
+              onChanged: (val) {
+                setState(() {
+                  _showChart = val;
+                });
+              },
+            ),
+          ],
+        ),
+        _showChart
+            ? Container(
+                height: (_mediaQuery.size.height -
+                        _appBar.preferredSize.height -
+                        _mediaQuery.padding.top) *
+                    0.7,
+                child: Chart(_recentTransactions),
+              )
+            : txListWidget
+      ];
+    }
+
+    CupertinoPageScaffold _buildIosScaffold(SingleChildScrollView _pageBody) {
+      return CupertinoPageScaffold(
+        child: _pageBody,
+        navigationBar: _appBar as ObstructingPreferredSizeWidget,
+      );
+    }
+
+    Scaffold _buildAndroidScaffold(SingleChildScrollView _pageBody) {
+      return Scaffold(
+        appBar: _appBar,
+        body: _pageBody,
+        floatingActionButton: Platform.isIOS
+            ? Container()
+            : FloatingActionButton(
+                child: const Icon(Icons.add),
+                onPressed: () => _startAddNewTransaction(context),
+              ),
+      );
+    }
+
     final _pageBody = SingleChildScrollView(
       child: Column(
         // mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          if (isLandscape)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text('Show Chart'),
-                Switch.adaptive(
-                  activeColor: Theme.of(context).colorScheme.secondary,
-                  value: _showChart,
-                  onChanged: (val) {
-                    setState(() {
-                      _showChart = val;
-                    });
-                  },
-                ),
-              ],
-            ),
-          if (!isLandscape)
-            Container(
-              height: (_mediaQuery.size.height -
-                      _appBar.preferredSize.height -
-                      _mediaQuery.padding.top) *
-                  0.3,
-              child: Chart(_recentTransactions),
-            ),
-          if (!isLandscape) txListWidget,
-          if (isLandscape)
-            _showChart
-                ? Container(
-                    height: (_mediaQuery.size.height -
-                            _appBar.preferredSize.height -
-                            _mediaQuery.padding.top) *
-                        0.7,
-                    child: Chart(_recentTransactions),
-                  )
-                : txListWidget,
+          if (isLandscape) ..._buildLandscapeContent(),
+          if (!isLandscape) ..._buildPortraitContent(),
         ],
       ),
     );
     return Platform.isIOS
-        ? CupertinoPageScaffold(
-            child: _pageBody,
-            navigationBar: _appBar as ObstructingPreferredSizeWidget,
-          )
-        : Scaffold(
-            appBar: _appBar,
-            body: _pageBody,
-            floatingActionButton: Platform.isIOS
-                ? Container()
-                : FloatingActionButton(
-                    child: const Icon(Icons.add),
-                    onPressed: () => _startAddNewTransaction(context),
-                  ),
-          );
+        ? _buildIosScaffold(_pageBody)
+        : _buildAndroidScaffold(_pageBody);
   }
 }
